@@ -7,7 +7,7 @@
 # WORK
 HOSTNAME=`scutil --get ComputerName`
 if test $HOSTNAME = "id25218000" ; then
-	# work related stuff
+	# work related stuff get from my work git
 	# hostnames, sshs, repositories...
 	source /Users/felipew/Documents/Scripts/utils.sh
 fi
