@@ -16,14 +16,17 @@ fi
 # fast dir
 cd1(){
 	case $1 in
-		"1")
+		"1"|"dev")
 			cd ~/Documents/Dev/
 			;;
-		"2")
+		"2"|"me")
 			cd ~/Documents/DevMe/
 			;;
-		"3")
+		"3"|"docs")
 			cd ~/Documents/DevDocs/
+			;;
+		"4" | "scripts")
+			cd ~/Documents/Scripts
 			;;
 		"*")
 			echo "1 - ~/Documents/Dev/"
@@ -31,6 +34,62 @@ cd1(){
 			echo "3 - ~/Documents/DevDocs/"
 			;;
 	esac
+}
+
+# iOS Debuggin made easy
+# Remote Virtual Interface utils
+# Create an Remote Virtual Interface with the given UUID
+crvi() {
+	uuid=$1
+
+	if test -z $uuid ; then
+		echo "$FUNCNAME <uuid>"
+		return false
+	fi
+
+	countOld=`ifconfig -l | wc -w`
+
+	# check if device already have a rvi created
+	activeDevice=`rvictl -l | grep -c $uuid`
+	if test $activeDevice -gt 1 ; then
+		deviceInterface=`rvictl -l | grep $uuid | awk '{ print $NF }'`
+		echo "Device already created at interface $deviceInterface"
+		return 0
+	fi
+
+	rvictl -s $uuid 
+
+	countNew=`ifconfig -l | wc -w`
+
+	if test $countNew -gt $countOld ; then
+		deviceInterface=`rvictl -l | grep $uuid | awk '{ print $NF }'`
+		echo "RVI created at interface $deviceInterface"
+	else
+		echo "Failed to create RVI, check if the device is connected or if the UUID is correct"
+	fi
+}
+drvi(){
+	uuid=$1
+
+	if test -z $uuid ; then
+		echo "$FUNCNAME <uuid>"
+		return false
+	fi
+
+	rvictl -x $uuid
+}
+
+debug_iphone(){
+	crvi "055d8dca3765bdeb225567fb513fad6f1e126a1b"
+}
+end_iphone(){
+	drvi "055d8dca3765bdeb225567fb513fad6f1e126a1b"
+}
+debug_ipad(){
+	crvi "d00d8d81bdfe58f129a2b06e8bb1fd58b1018c0e"
+}
+end_ipad(){
+	drvi "d00d8d81bdfe58f129a2b06e8bb1fd58b1018c0e"
 }
 
 # Show netfork interfaces IP.
@@ -73,7 +132,7 @@ connect(){
 	echo -n "Digite a senha da rede ${ssid}: "
 	read passwd
 
-	connectWifi $ssid $passwd
+	connectWifi "$ssid" "$passwd"
 }
 
 # wifi helper
