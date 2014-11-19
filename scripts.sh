@@ -15,6 +15,25 @@ fi
 
 # fast dir
 cd1(){
+	subdir(){
+		dir=$1
+		if test "x$dir" = "x" ; then
+			# vazio nao faz nada
+			return
+		fi
+
+		if test -d $dir ; then
+			cd $dir
+			return
+		fi
+
+		newdir=`ls -1 | grep $dir | head -n1`
+		echo $newdir
+		if ! test -z $newdir ; then
+			cd $newdir
+			return
+		fi
+	}
 	case $1 in
 		"1"|"dev")
 			cd ~/Documents/Dev/
@@ -32,8 +51,11 @@ cd1(){
 			echo "1 - ~/Documents/Dev/"
 			echo "2 - ~/Documents/DevMe/"
 			echo "3 - ~/Documents/DevDocs/"
+			exit
 			;;
 	esac
+
+	subdir $2
 }
 
 # iOS Debuggin made easy
